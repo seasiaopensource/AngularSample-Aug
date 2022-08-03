@@ -1,0 +1,62 @@
+<base-accordion *ngIf="!isMRMS" id="addGuestsTop" [isOpen]="isOpen" [seleniumName]='"AddGuests"'>
+  <span header [innerText]='messages["addguests.section.title"]'></span>
+  <div content>
+    <div *ngIf="displayForm">
+      <alert-message [translations]="messages" [message]='message'></alert-message>
+      <p class="pOne mb-15-xs" *ngIf="onlyMainGuest" [innerText]="messages['addguests.one.guest.message']" data-slnm-ihg="guestNameReservationHolderNoticeSID"></p>
+      <p class="pOne mb-15-xs" *ngIf="allAdditionalGuestsAlreadyEntered" [innerHTML]="messages['addguests.all.guests.message']|messageArgs: [numberOfExistingAdditionalGuests]" data-slnm-ihg="guestNameNoMoreAdditionalGuestNoticeSID"></p>
+      <p class="pOne mb-15-xs" *ngIf="someAdditionalGuestsAlreadyEntered" [innerHTML]="messages['addguests.some.guests.message']|messageArgs: [possibleAdditionalGuests, numberOfExistingAdditionalGuests]" data-slnm-ihg="guestNamePendingAdditionalGuestNoticeSID"></p>
+
+      <form [formGroup]="additionalGuestsForm">
+        <div formArrayName="guests" class="guestNamesFields mt-20" *ngFor="let guest of guestsFormArray.controls; let i = index">
+          <div [formGroupName]="i" class="mb-35">
+            <div class="form-group">
+              <div class="pTwo">
+                <span [innerHtml]='messages["addguests.firstName.label"]' [attr.data-slnm-ihg]="'guestNameFirstNameTitleSID[' + i + ']'"></span>
+                <span *ngIf="guestsFormArray.controls.length > 1" [innerHtml]='messages["addguests.guest.label"] | messageArgs: [i+1]' [attr.data-slnm-ihg]="'guestNameFirstNameGuestTitleSID[' + i + ']'"></span>
+              </div>
+              <div class="mb-15">
+                <input formControlName="firstName" type="text" class="form-control textField pOne" [attr.data-slnm-ihg]="'guestNameFirstNameValueSID[' + i + ']'"
+                       [ngClass]="{'has-error': guest.get('firstName').errors || guest.hasError('firstNameRequired')}">
+                <div class="pTwo inline-error mt-5" *ngIf="guest.get('firstName').errors && !guest.get('firstName').pristine">
+                  <div [hidden]="!guest.get('firstName').errors.pattern" [innerHtml]='messages["addguests.error.inline.characters.message"]' [attr.data-slnm-ihg]="'guestNameFirstNameErrorPatternSID[' + i + ']'"></div>
+                </div>
+                <div class="pTwo inline-error mt-5"  *ngIf="guest.hasError('firstNameRequired')" [innerHtml]='messages["addguests.error.inline.required.firstname"]' [attr.data-slnm-ihg]="'guestNameFirstNameErrorRequiredSID[' + i + ']'"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="pTwo">
+                <span [innerHtml]='messages["addguests.lastName.label"]' [attr.data-slnm-ihg]="'guestNameLastNameTitleSID[' + i + ']'"></span>
+                <span *ngIf="guestsFormArray.controls.length > 1" [innerHtml]='messages["addguests.guest.label"] | messageArgs: [i+1]' [attr.data-slnm-ihg]="'guestNameLastNameGuestTitleSID[' + i + ']'"></span>
+              </div>
+              <input formControlName="lastName" type="text" class="form-control textField pOne" [attr.data-slnm-ihg]="'guestNameLastNameValueSID[' + i + ']'"
+                     [ngClass]="{'has-error': guest.get('lastName').errors || guest.hasError('lastNameRequired')}">
+              <div class="pTwo inline-error mt-5" *ngIf="guest.get('lastName').errors && !guest.get('lastName').pristine">
+                <div [hidden]="!guest.get('lastName').errors.pattern" [innerHtml]='messages["addguests.error.inline.characters.message"]' [attr.data-slnm-ihg]="'guestNameLastNameErrorPatternSID[' + i + ']'"></div>
+              </div>
+              <div class="pTwo inline-error mt-5"  *ngIf="guest.hasError('lastNameRequired')" [innerHtml]='messages["addguests.error.inline.required.lastname"]' [attr.data-slnm-ihg]="'guestNameLastNameErrorRequiredSID[' + i + ']'"></div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <p class="pOne mb-15-xs mt-20" *ngIf="hasSuccessfulGuestAdded || numberOfAdditionalGuestsAvailableToAdd > 0" [innerText]="messages['addguests.disclaimer.message']" data-slnm-ihg="guestNameSuccessMessageSID"></p>
+      <p class="pOne mb-15-xs mt-20" *ngIf="hasSuccessfulGuestAdded" [innerHTML]="messages['addguests.assistance.message'] | messageArgs: [hotelDetailsURL, hotel.name]" data-slnm-ihg="guestNameHotelNameSuccessMessageSID"></p>
+
+      <button type="button" class="cta-button-secondary hNine w-100 text-center mb-5 mt-20" *ngIf="!allAdditionalGuestsAlreadyEntered && !onlyMainGuest"
+              [disabled]="!(additionalGuestsForm.valid && !additionalGuestsForm.pristine)"
+              [innerText]="messages['addguests.save.label']"
+              data-slnm-ihg="guestNameSubmitButtonSID" (click)="saveAdditionalGuestsNames()"></button>
+    </div>
+    <div *ngIf="!displayForm" data-slnm-ihg="additionalGuestRestrictionsContainerSID">
+      <h1 class="hEight" [innerText]="reservation.rate.additionalGuestRestriction.header" data-slnm-ihg="additionalGuestNamesRestrictionTitleSID"></h1>
+      <p class="pOne mb-10" [innerText]="reservation.rate.additionalGuestRestriction.body" data-slnm-ihg="additionalGuestNamesRestrictionDescriptionSID"></p>
+      <div class="mb-5" data-slnm-ihg="additionalGuestNamesRestrictionHelpLinkSID">
+        <a href="{{customerCareWorldWideURL}}" target="_blank" class="pOne themeText" [innerText]="messages['addguests.additional.guest.restrictions.help.link']"></a>
+      </div>
+      <div data-slnm-ihg="additionalGuestNamesRestrictionTermsConditionsLinkSID">
+        <a href="{{termsAndConditionsURL}}" target="_blank" class="pOne themeText" [innerText]="messages['addguests.additional.guest.restrictions.terms.and.conditions']"></a>
+      </div>
+    </div>
+  </div>
+</base-accordion>

@@ -1,0 +1,20 @@
+@import "stay-mgmt/style/global/variables";
+
+.guestNamesFields {
+  .textField {
+    width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid $neutralGrey5;
+    height: 42px;
+  }
+  .inline-error {
+    font-size: 14px;
+    line-height: 16px;
+    color: $typographyColor9;
+    font-weight: bold;
+  }
+  .has-error {
+    border: 1px solid $typographyColor14;
+  }
+}
